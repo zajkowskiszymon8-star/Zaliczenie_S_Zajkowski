@@ -8,11 +8,13 @@ st.title("📦 Aplikacja magazynowa")
 
 def get_produkty():
     return supabase.table("Produkty").select(
-        'id, "Nazwa", "Liczba", "Cena", Kategorie("Nazwa")'
+        'id, "Nazwa", "Liczba", "Cena", Kategoria_id("Nazwa")'
     ).execute().data
 
 def get_kategorie():
-    return supabase.table("Kategorie").select('id, "Nazwa"').execute().data
+    return supabase.table("Kategorie").select(
+        'id, "Nazwa"'
+    ).execute().data
 
 def dodaj_produkt(nazwa, ilosc, cena, kategoria_id):
     supabase.table("Produkty").insert({
@@ -71,7 +73,7 @@ wybrana_kategoria = st.selectbox(
 st.header("📋 Produkty")
 
 for p in produkty:
-    nazwa_kat = p["Kategorie"]["Nazwa"]
+    nazwa_kat = p["Kategoria_id"]["Nazwa"]
 
     if wybrana_kategoria != "Wszystkie" and nazwa_kat != wybrana_kategoria:
         continue
