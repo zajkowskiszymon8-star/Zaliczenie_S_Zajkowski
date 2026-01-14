@@ -8,36 +8,40 @@ st.title("📦 Aplikacja magazynowa")
 
 def get_produkty():
     return supabase.table("Produkty").select(
-        "id, nazwa, liczba, cena, Kategorie(nazwa)"
+        'id, "Nazwa", "Liczba", "Cena", Kategorie("Nazwa")'
     ).execute().data
 
 def get_kategorie():
-    return supabase.table("Kategorie").select("*").execute().data
+    return supabase.table("Kategorie").select('id, "Nazwa"').execute().data
 
 def dodaj_produkt(nazwa, ilosc, cena, kategoria_id):
     supabase.table("Produkty").insert({
-        "nazwa": nazwa,
-        "liczba": ilosc,
-        "cena": cena,
-        "kategoria_id": kategoria_id
+        "Nazwa": nazwa,
+        "Liczba": ilosc,
+        "Cena": cena,
+        "Kategoria_id": kategoria_id
     }).execute()
 
 def usun_produkt(pid):
     supabase.table("Produkty").delete().eq("id", pid).execute()
 
 def zmien_cene(pid, cena):
-    supabase.table("Produkty").update({"cena": cena}).eq("id", pid).execute()
+    supabase.table("Produkty").update({
+        "Cena": cena
+    }).eq("id", pid).execute()
 
 def zmien_ilosc(pid, ilosc):
-    supabase.table("Produkty").update({"liczba": ilosc}).eq("id", pid).execute()
+    supabase.table("Produkty").update({
+        "Liczba": ilosc
+    }).eq("id", pid).execute()
 
 # ===== DANE =====
 
 produkty = get_produkty()
 kategorie = get_kategorie()
 
-kat_map = {k["nazwa"]: k["id"] for k in kategorie}
-prod_map = {p["nazwa"]: p["id"] for p in produkty}
+kat_map = {k["Nazwa"]: k["id"] for k in kategorie}
+prod_map = {p["Nazwa"]: p["id"] for p in produkty}
 
 # ===== DODAWANIE =====
 
@@ -67,21 +71,20 @@ wybrana_kategoria = st.selectbox(
 st.header("📋 Produkty")
 
 for p in produkty:
-    nazwa_kat = p["Kategorie"]["nazwa"]
+    nazwa_kat = p["Kategorie"]["Nazwa"]
 
     if wybrana_kategoria != "Wszystkie" and nazwa_kat != wybrana_kategoria:
         continue
 
-    if p["liczba"] <= 5:
-        st.error(
-            f"{p['nazwa']} | {nazwa_kat} | "
-            f"Ilość: {p['liczba']} | Cena: {p['cena']} zł"
-        )
+    opis = (
+        f"{p['Nazwa']} | {nazwa_kat} | "
+        f"Ilość: {p['Liczba']} | Cena: {p['Cena']} zł"
+    )
+
+    if p["Liczba"] <= 5:
+        st.error(opis)
     else:
-        st.write(
-            f"{p['nazwa']} | {nazwa_kat} | "
-            f"Ilość: {p['liczba']} | Cena: {p['cena']} zł"
-        )
+        st.write(opis)
 
 # ===== EDYCJA =====
 
